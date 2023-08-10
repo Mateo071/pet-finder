@@ -1,7 +1,6 @@
 //starter data
 const express = require('express');
 const app = express();
-const path = require('path');
 const pets = require('./database.js')
 
 const PORT = 8080;
@@ -22,33 +21,26 @@ app.get('/', (req, res) => {
     })}</h3>`);
 })
 
+app.get('/pets/owner', (req, res) => {
+  const owner = req.query.owner;
+  if (owner) {
+    const filteredResults = pets.filter((pet) => pet.owner ===owner)
+      if (filteredResults.length > 0) {
+        res.send(filteredResults);
+      } else {
+        res.send('Owner not found');
+    }
+  } else {
+    res.send('Owner not specified')
+  }
+  
+});
+
 //GET PET BY ID
 app.get('/pets/:name', (req, res) => {
   const name = req.params.name;
-
-  const newPetArray = pets.map((pet) => {
-    return pet.name.toLowerCase();
-  })
-  if (newPetArray.some((petName) => petName === name.toLowerCase())) {
-    const foundName = () =>{
-      newPetArray.find((petName) => petName == name);
-      return (this.name)
-    } 
-
-    console.log(foundName);
-    res.send(`
-    <div>
-      <h1>Pet Name: ${name}</h1>
-      <p>Pet Breed: ${pets[1].breed}</p>
-      <p>Pet Owner: ${pets[1].owner}</p>
-    </div>
-    `)
-  } else {
-    res.send(`
-    <h1>Sorry. Pet not found.</h1>
-    `);
-  }
-})
+  res.send(pets.filter((pet) => pet.name === name));
+  });
 
 app.listen(PORT, () => {
   console.log(`successfully running on Port ${PORT}`)
